@@ -39,8 +39,21 @@ while True:
             embed.add_embed_field(name="Streaming?", value=str(streaming))
 
             webhook.add_embed(embed)
+
+            # add streaming embed
+            if streaming:
+                streamebed = DiscordEmbed(title=f"{update_info['version']} streaming information", color=0x00ff00)
+                for stream_file in update_info['property_files']:
+                    print(f"ADD STREAM FILE {stream_file}")
+                    mb = round(stream_file['size'] / (1024 * 1024), 2)
+                    streamebed.add_embed_field(stream_file["filename"], value=f"{stream_file['size']} bytes ({mb} MB)\nFile Offset: {stream_file['offset']}")
+                webhook.add_embed(streamebed)
+                print("BUILD STREAM HOOK OK")
+
             webhook.execute()
+            print("CHANGE UPDATE URL")
             update_url = update_info['version'] + ".json"
+            print("change ok")
 
 
         elif r.status_code == 403:
