@@ -28,9 +28,13 @@ err_stream_handler.setLevel(logging.WARNING)
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s', handlers=[out_stream_handler, err_stream_handler])
 
 request_response = ""
+first_time = True
 
 while True:
     try:
+        if(first_time != True):
+            time.sleep(3600) # 1 hour
+        first_time = False
         logging.info("Checking for updates...")
         r = requests.get(f"{update_url_base}{r1_version}.json")
         if r.status_code == 200:
@@ -80,7 +84,5 @@ while True:
             logging.debug("No updates")
         else:
             logging.critical(f"OTA CHECK ERROR (REQUEST) : {r.status_code} {r.text}")
-
-        time.sleep(3600) # 1 hour
     except Exception as e:
         logging.critical("ERROR: {e}")
