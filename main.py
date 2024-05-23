@@ -52,8 +52,9 @@ while True:
 
             webhook.execute()
             print("CHANGE UPDATE URL")
-            update_url = update_info['version'] + ".json"
-            print("change ok")
+            print(update_url)
+            update_url = update_url_base + update_info['version'] + ".json"
+            print(f"change ok {update_url}")
 
 
         elif r.status_code == 403:
