@@ -6,14 +6,18 @@
 # -------- CONFIGURATIONS --------- #
 update_url = "rabbit_OS_v0.8.50_20240407162326.json" # default
 update_url_base = "https://ota.transactional.pub/qa/"
-webhook_url = "https://discord.com/api/webhooks/1243089400737304647/v0IcdxRLncS0u_2_LCPCbMOncQ5-RP_O3u2ZOo7yAWjw3JMgLKD_I_Dj1yUAw5ja3Bhw"
+webhook_url = None
 # --------------------------------- #
 import requests
 import logging
 import time
 from discord_webhook import DiscordWebhook, DiscordEmbed
 import sys
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+webhook_url = os.getenv("DISCORD_WEBHOOK")
 # PM2 Logging Fix
 out_stream_handler = logging.StreamHandler(sys.stdout)
 out_stream_handler.setLevel(logging.DEBUG)
