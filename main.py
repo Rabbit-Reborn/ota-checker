@@ -6,7 +6,7 @@
 # -------- CONFIGURATIONS --------- #
 update_url = "rabbit_OS_v0.8.50_20240407162326.json" # default
 update_url_base = "https://ota.transactional.pub/qa/"
-webhook = "https://discord.com/api/webhooks/1243089400737304647/v0IcdxRLncS0u_2_LCPCbMOncQ5-RP_O3u2ZOo7yAWjw3JMgLKD_I_Dj1yUAw5ja3Bhw"
+webhook_url = "https://discord.com/api/webhooks/1243089400737304647/v0IcdxRLncS0u_2_LCPCbMOncQ5-RP_O3u2ZOo7yAWjw3JMgLKD_I_Dj1yUAw5ja3Bhw"
 # --------------------------------- #
 import requests
 import time
@@ -20,7 +20,7 @@ while True:
             print("UPDATE FOUND!")
             print("GET info")
             update_info = r.json()
-            webhook = DiscordWebhook(url=webhook, rate_limit_retry=True)
+            webhook = DiscordWebhook(url=webhook_url, rate_limit_retry=True)
             # Create embed
 
             embed = DiscordEmbed(title=f'New OTA: {update_info["version"]}', description=update_info["info"], color=0x00ff00)
