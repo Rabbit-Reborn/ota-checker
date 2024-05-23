@@ -4,7 +4,7 @@
 #
 
 # -------- CONFIGURATIONS --------- #
-update_url = "rabbit_OS_v0.8.50_20240407162326.json" # default
+r1_version = "rabbit_OS_v0.8.50_20240407162326" # default
 update_url_base = "https://ota.transactional.pub/qa/"
 webhook_url = None
 # --------------------------------- #
@@ -27,13 +27,19 @@ err_stream_handler = logging.StreamHandler(sys.stderr)
 err_stream_handler.setLevel(logging.WARNING)
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s', handlers=[out_stream_handler, err_stream_handler])
 
+request_response = ""
+
 while True:
     try:
         logging.info("Checking for updates...")
-        r = requests.get(f"{update_url_base}{update_url}")
+        r = requests.get(f"{update_url_base}{r1_version}.json")
         if r.status_code == 200:
+            
             logging.info("Successfully got a new update")
             update_info = r.json()
+            if(request_response == update_info):
+                continue
+            request_response = update_info
             webhook = DiscordWebhook(url=webhook_url, rate_limit_retry=True)
             # Create embed
 
@@ -65,9 +71,9 @@ while True:
                 logging.info("Successfully made streaming embed")
 
             webhook.execute()
-            logging.info(f"The current update URL is {update_url}")
-            update_url = update_url_base + update_info['version'] + ".json"
-            logging.info(f"Changed Update URL to {update_url}")
+            logging.info(f"The current update URL is {r1_version}")
+            r1_version = update_url_base + update_info['version'] + ".json"
+            logging.info(f"Changed Update URL to {r1_version}")
 
 
         elif r.status_code == 403:
