@@ -4,12 +4,14 @@
 #
 
 # -------- CONFIGURATIONS --------- #
-r1_version = "rabbit_OS_v0.8.50_20240407162326" # default
-update_url_base = "https://ota.transactional.pub/qa/"
+r1_version = "rabbit_OS_v0.8.50_20240407162326"  # default
+update_url_base = "https://ota.transactional.pub/qa/" # REAL RABBIT OTA SERVER
+#update_url_base = "http://127.0.0.1:5000/" # TEST SERVER
 webhook_url = None
 # --------------------------------- #
 import requests
 import logging
+import multiline
 import time
 from discord_webhook import DiscordWebhook, DiscordEmbed
 import sys
@@ -25,29 +27,28 @@ out_stream_handler.addFilter(lambda record: record.levelno <= logging.INFO)
 
 err_stream_handler = logging.StreamHandler(sys.stderr)
 err_stream_handler.setLevel(logging.WARNING)
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s', handlers=[out_stream_handler, err_stream_handler])
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s',
+                    handlers=[out_stream_handler, err_stream_handler])
 
 request_response = ""
 first_time = True
 
 while True:
     try:
-        if(first_time != True):
-            time.sleep(3600) # 1 hour
-        first_time = False
         logging.info("Checking for updates...")
         r = requests.get(f"{update_url_base}{r1_version}.json")
         if r.status_code == 200:
-            
+
             logging.info("Successfully got a new update")
-            update_info = r.json()
-            if(request_response == update_info):
+            update_info = multiline.loads(r.text, strict=False) # Add support for multiline cuz rabbit
+            if request_response == update_info:
                 continue
             request_response = update_info
             webhook = DiscordWebhook(url=webhook_url, rate_limit_retry=True)
             # Create embed
 
-            embed = DiscordEmbed(title=f'New OTA: {update_info["version"]}', description=update_info["info"], color=0x00ff00)
+            embed = DiscordEmbed(title=f'New OTA: {update_info["version"]}', description=update_info["info"],
+                                 color=0x00ff00)
 
             embed.add_embed_field(name="Name", value=update_info["name"])
             embed.add_embed_field(name="Version", value=update_info["version"])
@@ -70,7 +71,8 @@ while True:
                 for stream_file in update_info['property_files']:
                     logging.info(f"Adding {stream_file['filename']}")
                     mb = round(stream_file['size'] / (1024 * 1024), 2)
-                    streamebed.add_embed_field(stream_file["filename"], value=f"{stream_file['size']} bytes ({mb} MB)\nFile Offset: {stream_file['offset']}")
+                    streamebed.add_embed_field(stream_file["filename"],
+                                               value=f"{stream_file['size']} bytes ({mb} MB)\nFile Offset: {stream_file['offset']}")
                 webhook.add_embed(streamebed)
                 logging.info("Successfully made streaming embed")
 
@@ -84,5 +86,6 @@ while True:
             logging.debug("No updates")
         else:
             logging.critical(f"OTA CHECK ERROR (REQUEST) : {r.status_code} {r.text}")
+        time.sleep(10)
     except Exception as e:
-        logging.critical("ERROR: {e}")
+        logging.critical(f"ERROR: {e}")
