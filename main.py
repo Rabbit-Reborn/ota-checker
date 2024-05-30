@@ -36,7 +36,7 @@ first_time = True
 while True:
     try:
         logging.info("Checking for updates...")
-        r = requests.get(f"{update_url_base}{r1_version}.json")
+        r = requests.get(f"{update_url_base}{r1_version}.json", headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"})
         if r.status_code == 200:
 
             logging.info("Successfully got a new update")
