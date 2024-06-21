@@ -5,8 +5,8 @@
 
 # -------- CONFIGURATIONS --------- #
 r1_version = "rabbit_OS_v0.8.50_20240407162326"  # default
-update_url_base = "https://ota.transactional.pub/qa/" # REAL RABBIT OTA SERVER
-#update_url_base = "http://127.0.0.1:5000/" # TEST SERVER
+#update_url_base = "https://ota.transactional.pub/qa/"
+update_url_base = "http://127.0.0.1:5000/"
 webhook_url = None
 # --------------------------------- #
 import requests
@@ -30,9 +30,6 @@ err_stream_handler.setLevel(logging.WARNING)
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s',
                     handlers=[out_stream_handler, err_stream_handler])
 
-request_response = ""
-first_time = True
-
 while True:
     try:
         logging.info("Checking for updates...")
@@ -41,10 +38,7 @@ while True:
 
             logging.info("Successfully got a new update")
             update_info = multiline.loads(r.text, strict=False) # Add support for multiline cuz rabbit
-            if request_response == update_info:
-                continue
-            request_response = update_info
-            webhook = DiscordWebhook(url=webhook_url, rate_limit_retry=True)
+            webhook = DiscordWebhook(url=webhook_url, rate_limit_retry=True)  # type: ignore
             # Create embed
 
             embed = DiscordEmbed(title=f'New OTA: {update_info["version"]}', description=update_info["info"],
