@@ -5,8 +5,8 @@
 
 # -------- CONFIGURATIONS --------- #
 r1_version = "rabbit_OS_v0.8.50_20240407162326"  # default
-#update_url_base = "https://ota.transactional.pub/qa/"
-update_url_base = "http://127.0.0.1:5000/"
+update_url_base = "https://ota.transactional.pub/qa/"
+#update_url_base = "http://127.0.0.1:5000/"
 webhook_url = None
 # --------------------------------- #
 import requests
